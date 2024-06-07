@@ -5,6 +5,7 @@ module.exports = {
         script: './server.js', // Đường dẫn đến tệp server.js của bạn
         exec_mode: 'fork',
         instances: '1',
+        port:'2024',
         env: {
           NODE_ENV: 'production',
           PORT: 2024,
