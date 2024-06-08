@@ -29,7 +29,7 @@ const sendNotification = (req, res) => {
   const sendNotificationPromises = subscriptions.map(subscription => {
     return webPush.sendNotification(subscription, payload, options)
       .then(response => {
-        console.log('Sent notification', response,payload);
+        console.log('Sent notification', response);
       })
       .catch(error => {
         console.error('Error sending notification', error);
@@ -37,7 +37,7 @@ const sendNotification = (req, res) => {
   });
 
   Promise.all(sendNotificationPromises)
-    .then(() => res.status(200).json({ message: 'Notifications sent' }))
+    .then(() => res.status(200).json({ message: 'Notifications sent' ,payload}))
     .catch(error => res.status(500).json({ error: error.message }));
 };
 
