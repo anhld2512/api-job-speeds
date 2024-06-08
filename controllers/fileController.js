@@ -33,7 +33,8 @@ exports.handleFileUpload = async (req, res) => {
     await newFile.save();
 
     const host = req.get('host');
-    const fileUrl = `${req.protocol}://${host}/api/files/${req.file.filename}`;
+    // const fileUrl = `${req.protocol}://${host}/api/files/${req.file.filename}
+    const fileUrl = `https://api.jobspeeds.com/api/files/${req.file.filename}`
     res.status(201).json({result:true, file: req.file, fileUrl });
 };
 

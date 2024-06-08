@@ -20,7 +20,7 @@ exports.createJob = async (req, res) => {
             name: profileDetail.personalInfo.fullName,
             email: profileDetail.personalInfo.email,
             phone: profileDetail.personalInfo.phone,
-            companyName: req.body.contact.companyName,
+            company: req.body.contact.company,
             address: profileDetail.personalInfo.address,
             avatar: profileDetail.avatar
         };

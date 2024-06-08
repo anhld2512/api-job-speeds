@@ -58,7 +58,7 @@ const jobSchema = new mongoose.Schema({
         phone: String,
         address: String,
         avatar: String,
-        companyName:String
+        company:String
     },
     createdAt: {
         type: Date,
