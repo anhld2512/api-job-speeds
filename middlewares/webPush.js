@@ -20,17 +20,30 @@ const saveSubscription = (req, res) => {
 };
 
 const sendNotification = (req, res) => {
-  const notificationPayload = req.body;
+  const { title, message } = req.body;
 
-  const promises = subscriptions.map(subscription => {
-    return webPush.sendNotification(subscription, JSON.stringify(notificationPayload))
+  const payload = JSON.stringify({
+    title: title,
+    message: message
+  });
+
+  const options = {
+    TTL: 60
+  };
+
+  const sendNotificationPromises = subscriptions.map(subscription => {
+    return webPush.sendNotification(subscription, payload, options)
+      .then(response => {
+        console.log('Sent notification', response);
+      })
       .catch(error => {
-        console.error('Error sending notification:', error);
+        console.error('Error sending notification', error);
       });
   });
 
-  Promise.all(promises)
-    .then(() => res.status(200).json({ message: 'Notification sent successfully.' }));
+  Promise.all(sendNotificationPromises)
+    .then(() => res.status(200).json({ message: 'Notifications sent' }))
+    .catch(error => res.status(500).json({ error: error.message }));
 };
 
 module.exports = {
