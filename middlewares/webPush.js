@@ -17,10 +17,10 @@ const saveSubscription = (req, res) => {
 const sendNotification = (req, res) => {
   const { title, message } = req.body;
 
-  const payload = JSON.stringify({
+  const payload = {
     title: title,
-    body: message
-  });
+    message: message
+  };
 
   const options = {
     TTL: 60
@@ -29,7 +29,7 @@ const sendNotification = (req, res) => {
   const sendNotificationPromises = subscriptions.map(subscription => {
     return webPush.sendNotification(subscription, payload, options)
       .then(response => {
-        console.log('Sent notification', response);
+        console.log('Sent notification', response,payload);
       })
       .catch(error => {
         console.error('Error sending notification', error);
