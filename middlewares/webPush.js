@@ -19,7 +19,7 @@ const sendNotification = (req, res) => {
 
   const payload = JSON.stringify({
     title: title,
-    message: message
+    body: message
   });
 
   const options = {
