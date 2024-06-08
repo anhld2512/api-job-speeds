@@ -15,12 +15,13 @@ const saveSubscription = (req, res) => {
   res.status(201).json({});
 };
 const sendNotification = (req, res) => {
-  const { title, message } = req.body;
+  const { title, message, url } = req.body;
 
-  const payload = {
-    title: title,
-    message: message
-  };
+  const payload = JSON.stringify({
+    title: title || 'Default Title',
+    message: message || 'Default message body',
+    url: url || 'https://default.url'
+  });
 
   const options = {
     TTL: 60
@@ -37,7 +38,7 @@ const sendNotification = (req, res) => {
   });
 
   Promise.all(sendNotificationPromises)
-    .then(() => res.status(200).json({ message: 'Notifications sent' ,payload}))
+    .then(() => res.status(200).json({ message: 'Notifications sent' }))
     .catch(error => res.status(500).json({ error: error.message }));
 };
 
