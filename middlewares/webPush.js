@@ -20,7 +20,7 @@ const sendNotification = (req, res) => {
   const payload = JSON.stringify({
     title: title || 'Default Title',
     message: message || 'Default message body',
-    url: url || 'https://default.url'
+    url: url || 'https://jobspeeds.com/job'
   });
 
   const options = {
