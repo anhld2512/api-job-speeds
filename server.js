@@ -14,7 +14,6 @@ const notificationRoutes = require('./routes/notificationRoutes');
 // const employeeRoutes = require('./routes/employeeRoutes');
 // const applyRoutes = require('./routes/applyRoutes');
 // const linkRoutes = require('./routes/linkRoutes');
-
 // const applicationFormRoutes = require('./routes/applicationFormRoutes');
 // const postRoutes = require('./routes/postRoutes');
 // const albumRoutes = require('./routes/albumRoutes');
