@@ -28,7 +28,11 @@ const sendNotification = (req, res) => {
     TTL: 60
   };
 
-  const sendNotificationPromises = subscriptions.map(subscription => {
+  // Loại bỏ các phần tử trùng lặp trong mảng subscriptions
+  const uniqueSubscriptions = Array.from(new Set(subscriptions.map(subscription => JSON.stringify(subscription))))
+                                    .map(subscription => JSON.parse(subscription));
+
+  const sendNotificationPromises = uniqueSubscriptions.map(subscription => {
     return webPush.sendNotification(subscription, payload, options)
       .then(response => {
         console.log('Sent notification', response);
@@ -42,6 +46,7 @@ const sendNotification = (req, res) => {
     .then(() => res.status(200).json({ message: 'Notifications sent' }))
     .catch(error => res.status(500).json({ error: error.message }));
 };
+
 
 module.exports = {
   saveSubscription,
