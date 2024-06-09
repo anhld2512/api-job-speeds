@@ -1,4 +1,5 @@
 const webPush = require('web-push');
+// ======> Open Terminal or CMD : npx web-push generate-vapid-keys
 const vapidKeys = {
   publicKey: 'BA5xnicrkH0hO5H0Y3cK5AAik0G_j62c8mukA0eYjhQ9ShDxDvh9gksXEL-VRMoZaeT2bDh2y_1Wi2C3ro9d_9E',
   privateKey: 'rDJFQnxX2BgHuC_H_zlFTk_QpDQyOzP1eON4xu7ucP4'
