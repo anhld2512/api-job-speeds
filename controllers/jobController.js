@@ -60,7 +60,7 @@ exports.getJobById = async (req, res) => {
         }
         res.status(200).json({result: true, data: job});
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({result: false, error: error.message });
     }
 };
 
@@ -80,11 +80,11 @@ exports.updateJobById = async (req, res) => {
 // Delete a job by ID
 exports.deleteJobById = async (req, res) => {
     try {
-        const job = await Job.findByIdAndDelete(req.params.id);
+        const job = await Job.findByIdAndUpdate(req.params.id,{jobStatus:'closed'});
         if (!job) {
             return res.status(404).json({ error: 'Job not found' });
         }
-        res.status(204).json({ message: 'Job deleted' });
+        res.status(204).json({result:true, message: 'Job deleted' });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

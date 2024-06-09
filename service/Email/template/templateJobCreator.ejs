@@ -328,14 +328,13 @@
           <li style="margin-bottom: 10px;">
             Địa chỉ: <strong style="margin-left: 5px; margin-right: 5px;"><%= address %></strong>
           </li>
-          <li style="margin-bottom: 10px;">
-            Địa chỉ: <strong style="margin-left: 5px; margin-right: 5px;"><%= address %></strong>
-          </li>
         </ul>
-        <h3 style="font-weight: 600;">Thư ứng tuyển</h3>
-        <p style="margin-left: 10px;line-height: 20px;">
-          <%= coverLetter%>
-        </p>
+        <% if(coverLetter.length >0){%>
+          <h3 style="font-weight: 600;">Thư ứng tuyển</h3>
+          <p style="margin-left: 10px;line-height: 20px;">
+            <%= coverLetter%>
+          </p>
+        <%}%>
         <div style="text-align:center;">
           <a href="https://jobspeeds.com/profile" class="button" style="color:white;text-decoration:none;">Xem thông tin chi tiết</a>
         </div>
