@@ -11,12 +11,10 @@ const createApplication = async (req, res) => {
       
       // Get job details to send email
       const job = await Job.findById(savedApplication.jobId).populate('contact');
- 
+      res.status(201).json({result:true,savedApplication});
       if (job) {
         await sendEmail(savedApplication, job);
       }
-  
-      res.status(201).json({result:true,savedApplication});
     } catch (error) {
       res.status(400).json({ message: error.message });
     }

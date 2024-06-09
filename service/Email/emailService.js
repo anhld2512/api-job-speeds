@@ -12,19 +12,21 @@ const transporter = nodemailer.createTransport({
 });
 
 const sendEmail = async (applicant, job) => {
-    console.log(applicant, job)
-  const { fullName, email, coverLetter, urlCV, phone } = applicant;
-  const { contact, jobImageUrl, jobAttachmentUrl, title, company } = job;
+  const { fullName, email, coverLetter, urlCV, phone ,address} = applicant;
+  const { contact, jobImageUrl, jobAttachmentUrl, jobName } = job;
 
-  const applicantTemplatePath = path.join(__dirname, './views/ViewsEmail/applicantEmailTemplate.ejs');
-  const jobCreatorTemplatePath = path.join(__dirname, './views/ViewsEmail/jobCreatorEmailTemplate.ejs');
+  const applicantTemplatePath = path.join(__dirname, './template/templateApplicant.ejs');
+  const jobCreatorTemplatePath = path.join(__dirname, './template/templateJobCreator.ejs');
 
   // Render email for applicant
   const applicantEmailTemplate = await ejs.renderFile(applicantTemplatePath, {
     fullName,
-    jobTitle: title,
+    jobTitle: jobName,
     coverLetter,
     urlCV,
+    phone,
+    email,
+    address,
     contactEmail: contact.email,
     companyName: contact.company,
     currentYear: new Date().getFullYear()
@@ -36,9 +38,10 @@ const sendEmail = async (applicant, job) => {
     fullName,
     email,
     phone,
-    jobTitle: title,
+    jobTitle: jobName,
     coverLetter,
     urlCV,
+    address,
     companyName: contact.company,
     currentYear: new Date().getFullYear()
   });
@@ -46,7 +49,7 @@ const sendEmail = async (applicant, job) => {
   const applicantMailOptions = {
     from: process.env.EMAIL_USER,
     to: email, // Send email to applicant
-    subject: 'Job Application Received',
+    subject: 'Application Received',
     html: applicantEmailTemplate,
     attachments: []
   };
@@ -54,11 +57,16 @@ const sendEmail = async (applicant, job) => {
   const jobCreatorMailOptions = {
     from: process.env.EMAIL_USER,
     to: contact.email, // Send email to job creator
-    subject: 'New Job Application Received',
+    subject: 'New Application Received',
     html: jobCreatorEmailTemplate,
     attachments: []
   };
-
+  if(urlCV){
+    jobCreatorMailOptions.attachments.push({
+        filename: 'Job Description.pdf',
+        path: urlCV
+      });
+  }
   if (jobImageUrl) {
     applicantMailOptions.attachments.push({
       filename: 'Image.jpg',
