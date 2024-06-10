@@ -124,7 +124,13 @@ exports.filterJobs = async (req, res) => {
             jobCategory: 1,
             jobTyped: 1,
             jobName: 1,
-            dateCreated: 1
+            dateCreated: 1,
+            jobSkills:1,
+            contact:{
+                company:1
+            },
+            jobImageUrl:1,
+
         };
 
         const jobsPromise = Job.find(filter, projection)
