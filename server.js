@@ -34,17 +34,18 @@ app.use(express.json());
 
 // Connect to MongoDB
 connectDB();
-const cors = require('cors');
-const corsOptions = {
-  origin: ['http://localhost:3000', 'https://jobspeeds.com','https://api.jobspeeds.com'],
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true,
-};
+// const cors = require('cors');
+// const corsOptions = {
+//   origin: ['http://localhost:3000', 'https://jobspeeds.com'],
+//   methods: ['GET', 'POST', 'PUT', 'DELETE'],
+//   allowedHeaders: ['Content-Type', 'Authorization'],
+//   credentials: true,
+// };
+// app.use(cors(corsOptions));
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
-app.use(cors(corsOptions));
+
 // Configure Express
 configureExpress(app);
 app.use(bodyParser.json());
