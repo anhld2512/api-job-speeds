@@ -1,19 +1,9 @@
 const express = require('express');
-const {
-    uploadFile,
-    handleFileUpload,
-    getFile,
-    deleteFile,
-} = require('../controllers/fileController');
-const authMiddleware = require('../middlewares/authMiddleware');
 const router = express.Router();
+const fileController = require('./controllers/fileController');
 
-router.post('/upload', uploadFile, handleFileUpload);
-router.post('/upload/private', authMiddleware, uploadFile, (req, res, next) => {
-    req.body.isPublic = false;
-    next();
-}, handleFileUpload);
-router.get('/:filename', getFile); // Không cần authMiddleware cho việc lấy file
-router.delete('/:filename', authMiddleware, deleteFile);
+router.post('/upload', fileController.uploadFile, fileController.handleFileUpload);
+router.get('/files/:filename', fileController.getFile);
+router.delete('/files/:filename', fileController.deleteFile);
 
 module.exports = router;

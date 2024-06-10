@@ -1,12 +1,11 @@
 const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
 
-const fileSchema = new Schema({
+const FileSchema = new mongoose.Schema({
     filename: { type: String, required: true },
-    userId: { type: String,},
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     isPublic: { type: Boolean, default: true },
-    allowedUsers: [{ type: Schema.Types.ObjectId, ref: 'User' }],
-    createdAt: { type: Date, default: Date.now },
+    allowedUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    path: { type: String, required: true }
 });
 
-module.exports = mongoose.model('File', fileSchema);
+module.exports = mongoose.model('File', FileSchema);
