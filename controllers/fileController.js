@@ -25,11 +25,11 @@ exports.handleFileUpload = async (req, res) => {
     const userId = req?.user?.id || ''
     const allowedUsers = req.body.allowedUsers || [];
     const newFile = new File({
-        filename: req.file.filename,
+        filename: req.file.filename.trim().replace(/\s+/g, '_'), // Loại bỏ khoảng trắng và thay thế khoảng trắng bằng dấu gạch dưới
         userId: userId,
         isPublic: isPublic,
         allowedUsers: allowedUsers
-    });
+      });
 
     await newFile.save();
 
