@@ -81,5 +81,6 @@ jobSchema.pre('save', function(next) {
     this.updatedAt = Date.now();
     next();
   });
+  jobSchema.index({ jobName: 'text', jobCategory: 'text', jobLocation: 'text' });
 
 module.exports = mongoose.model('Job', jobSchema);

@@ -34,14 +34,14 @@ app.use(express.json());
 
 // Connect to MongoDB
 connectDB();
-// const cors = require('cors');
-// const corsOptions = {
-//   origin: ['http://localhost:3000', 'https://jobspeeds.com'],
-//   methods: ['GET', 'POST', 'PUT', 'DELETE'],
-//   allowedHeaders: ['Content-Type', 'Authorization'],
-//   credentials: true,
-// };
-// app.use(cors(corsOptions));
+const cors = require('cors');
+const corsOptions = {
+  origin: ['http://localhost:3000', 'https://jobspeeds.com'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
+};
+app.use(cors(corsOptions));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
