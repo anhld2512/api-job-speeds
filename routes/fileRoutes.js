@@ -8,7 +8,7 @@ const {
 const authMiddleware = require('../middlewares/authMiddleware');
 const router = express.Router();
 
-router.post('/upload', authMiddleware, uploadFile, handleFileUpload);
+router.post('/upload', uploadFile, handleFileUpload);
 router.post('/upload/private', authMiddleware, uploadFile, (req, res, next) => {
     req.body.isPublic = false;
     next();
