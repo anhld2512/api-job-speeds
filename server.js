@@ -61,6 +61,7 @@ app.use('/api/profiles', profileRoutes);
 app.use('/api/jobs', jobRoutes);
 app.use('/api/notifications', notificationRoutes)
 app.use('/api/applications', applyRoutes);
+const punycode = require('punycode');
 
 // app.use('/api/links', linkRoutes);
 // app.use('/api/emails', emailRoutes);

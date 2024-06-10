@@ -152,6 +152,7 @@ exports.filterJobs = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
 exports.getDistinctValues = async (req, res) => {
     const { field } = req.query; // Lấy trường cần lấy giá trị phân biệt từ query params
 
@@ -165,17 +166,11 @@ exports.getDistinctValues = async (req, res) => {
     }
 
     try {
-        const distinctValues = await Job.aggregate([
-            { $match: { jobStatus: 'active' } },
-            { $group: { _id: `$${field}` } },
-            { $sort: { _id: 1 } },
-            { $limit: 100 },
-            { $project: { _id: 0, value: '$_id' } }
-        ]).exec();
+        const distinctValues = await Job.find({ jobStatus: 'active' }).distinct(field);
 
         res.status(200).json({
             result: true,
-            data: distinctValues.map(doc => doc.value)
+            data: distinctValues
         });
     } catch (error) {
         res.status(500).json({ error: error.message });

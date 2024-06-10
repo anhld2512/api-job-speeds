@@ -8,13 +8,13 @@ const {
     filterJobs,
     getDistinctValues
 } = require('../controllers/jobController');
-const authMiddleware = require('../middlewares/authMiddleware'); // Sử dụng middleware nếu cần
+const authMiddleware = require('../middlewares/authMiddleware');
 const router = express.Router();
 router.post('/', authMiddleware, createJob);
 router.get('/', getAllJobs);
 router.post('/filter', filterJobs);
+router.get('/distinct', getDistinctValues);
 router.get('/:id', getJobById);
 router.put('/:id', authMiddleware, updateJobById);
 router.delete('/:id', authMiddleware, deleteJobById);
-router.get('/distinct-values', getDistinctValues);
 module.exports = router;
