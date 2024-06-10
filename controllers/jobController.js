@@ -126,9 +126,7 @@ exports.filterJobs = async (req, res) => {
             jobName: 1,
             dateCreated: 1,
             jobSkills:1,
-            contact:{
-                company:1
-            },
+            'contact.company': 1,
             jobImageUrl:1,
 
         };
