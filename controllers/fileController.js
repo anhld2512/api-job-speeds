@@ -4,8 +4,9 @@ const multer = require('multer');
 const File = require('../models/File');
 
 // Define paths for public and private directories
-const publicDir = path.join(__dirname, '../uploads/public');
-const privateDir = path.join(__dirname, '../uploads/private');
+const uploadsDir = path.join(__dirname, '../uploads');
+const publicDir = path.join(uploadsDir, 'public');
+const privateDir = path.join(uploadsDir, 'private');
 
 // Create directories if they do not exist
 if (!fs.existsSync(publicDir)) {

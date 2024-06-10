@@ -51,7 +51,6 @@ app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 app.use('/uploads/public', express.static(path.join(__dirname, 'uploads/public')));
 app.use('/uploads/private', express.static(path.join(__dirname, 'uploads/private')));
 
-
 // Configure Express
 configureExpress(app);
 app.use(bodyParser.json());
