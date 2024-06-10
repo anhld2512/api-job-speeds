@@ -10,7 +10,6 @@ const {
 } = require('../controllers/jobController');
 const authMiddleware = require('../middlewares/authMiddleware'); // Sử dụng middleware nếu cần
 const router = express.Router();
-
 router.post('/', authMiddleware, createJob);
 router.get('/', getAllJobs);
 router.post('/filter', filterJobs);
