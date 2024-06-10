@@ -6,7 +6,6 @@ const path = require('path');
 const MongoStore = require('connect-mongo');
 const connectDB = require('./config/db');
 const configureExpress = require('./config/expressConfig');
-const corsOptions = require('./config/corsConfig')
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const fileRoutes = require('./routes/fileRoutes');
@@ -64,7 +63,15 @@ app.use(session({
   saveUninitialized: false,
   store: MongoStore.create({ mongoUrl: process.env.MONGO_URI })
 }));
-app.use(corsOptions);
+const cors = require('cors');
+const corsOptions = {
+  origin: ['http://localhost:3000', 'https://jobspeeds.com'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
 const PORT = process.env.PORT || 2024;
 
 app.listen(PORT, () => {
