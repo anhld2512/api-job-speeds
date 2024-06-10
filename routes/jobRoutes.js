@@ -17,5 +17,4 @@ router.get('/:id', getJobById);
 router.put('/:id', authMiddleware, updateJobById);
 router.delete('/:id', authMiddleware, deleteJobById);
 router.get('/distinct-values', getDistinctValues);
-
 module.exports = router;
