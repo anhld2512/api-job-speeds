@@ -42,7 +42,21 @@ const storage = multer.diskStorage({
     }
 });
 
-const upload = multer({ storage });
+// Kiểm tra loại file
+const fileFilter = (req, file, cb) => {
+    const allowedMimeTypes = ['image/jpeg', 'image/png', 'application/pdf'];
+    if (allowedMimeTypes.includes(file.mimetype)) {
+        cb(null, true);
+    } else {
+        cb(new Error('Invalid file type'), false);
+    }
+};
+
+const upload = multer({ 
+    storage,
+    limits: { fileSize: 10 * 1024 * 1024 }, // Giới hạn kích thước file 10MB
+    fileFilter
+});
 
 // Middleware to handle file upload
 exports.uploadFile = upload.single('file');
@@ -79,7 +93,8 @@ exports.getFile = async (req, res) => {
             return res.status(404).json({ error: 'File not found' });
         }
 
-        const isAllowed = file.isPublic || (req.user && req.user.id === file.userId?.toString()) || file.allowedUsers.includes(req.user?.id);
+        const userId = req.user ? req.user.id : null;
+        const isAllowed = file.isPublic || (userId && (userId === file.userId?.toString() || file.allowedUsers.includes(userId)));
         if (!isAllowed) {
             return res.status(403).json({ error: 'Access denied' });
         }
