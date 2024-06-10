@@ -22,7 +22,7 @@ exports.handleFileUpload = async (req, res) => {
     }
 
     const isPublic = req.body.isPublic !== undefined ? req.body.isPublic : true;
-    const userId = req?.user?.id || '6665ea7703de0cbec1208eee'
+    const userId = req?.user?.id || ''
     const allowedUsers = req.body.allowedUsers || [];
     const newFile = new File({
         filename: req.file.filename,

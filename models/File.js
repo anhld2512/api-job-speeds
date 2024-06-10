@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 const fileSchema = new Schema({
     filename: { type: String, required: true },
-    userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    userId: { type: String,},
     isPublic: { type: Boolean, default: true },
     allowedUsers: [{ type: Schema.Types.ObjectId, ref: 'User' }],
     createdAt: { type: Date, default: Date.now },
