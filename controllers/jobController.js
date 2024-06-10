@@ -96,7 +96,7 @@ exports.filterJobs = async (req, res) => {
     const skip = parseInt(req.body.skip) || 0;
     const search = req.body.data?.search || null;
     const jobCategory = req.body.data?.filter?.jobCategory ?? null;
-    const jobTyped = req.body.data?.filter?.jobTyped ?? null; // Ensure this matches the schema field
+    const jobTyped = req.body.data?.filter?.jobTyped ?? null;
     const jobName = req.body.data?.filter?.jobName ?? null;
 
     const filter = { jobStatus: 'active' };
@@ -108,15 +108,26 @@ exports.filterJobs = async (req, res) => {
             filter.jobCategory = jobCategory;
         }
         if (jobTyped) {
-            filter.jobTyped = jobTyped; // Ensure this matches the schema field
+            filter.jobTyped = jobTyped;
         }
         if (jobName) {
-            filter.jobName = new RegExp(jobName, 'i'); // Use regex for partial match
+            filter.jobName = new RegExp(jobName, 'i');
         }
     }
 
     try {
-        const jobsPromise = Job.find(filter) // Project only necessary fields
+        // Projection để chỉ lấy các trường cần thiết
+        const projection = {
+            _id: 1,
+            jobTitle: 1,
+            jobDescription: 1,
+            jobCategory: 1,
+            jobTyped: 1,
+            jobName: 1,
+            dateCreated: 1
+        };
+
+        const jobsPromise = Job.find(filter, projection)
             .limit(limit)
             .skip(skip)
             .sort({ dateCreated: -1 });
