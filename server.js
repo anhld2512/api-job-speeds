@@ -34,7 +34,15 @@ app.use(express.json());
 
 // Connect to MongoDB
 connectDB();
+const cors = require('cors');
+const corsOptions = {
+  origin: ['http://localhost:3000', 'https://jobspeeds.com'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
+};
 
+app.use(cors(corsOptions));
 // Configure Express
 configureExpress(app);
 app.use(bodyParser.json());
@@ -63,15 +71,7 @@ app.use(session({
   saveUninitialized: false,
   store: MongoStore.create({ mongoUrl: process.env.MONGO_URI })
 }));
-const cors = require('cors');
-const corsOptions = {
-  origin: ['http://localhost:3000', 'https://jobspeeds.com'],
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true,
-};
 
-app.use(cors(corsOptions));
 const PORT = process.env.PORT || 2024;
 
 app.listen(PORT, () => {
