@@ -4,8 +4,8 @@ const multer = require('multer');
 const File = require('../models/File');
 
 // Define paths for public and private directories
-const publicDir = path.join(__dirname, '../public/uploads');
-const privateDir = path.join(__dirname, '../private/uploads');
+const publicDir = path.join(__dirname, '../uploads/public');
+const privateDir = path.join(__dirname, '../uploads/private');
 
 // Create directories if they do not exist
 if (!fs.existsSync(publicDir)) {
@@ -41,7 +41,7 @@ exports.handleFileUpload = async (req, res) => {
     }
 
     const isPublic = req.body.isPublic !== undefined ? req.body.isPublic : true;
-    const userId = req?.user?.id || null; // userId can be null
+    const userId = req.body.userId || null; // userId có thể là null
     const allowedUsers = req.body.allowedUsers || [];
     const newFile = new File({
         filename: req.file.filename,
@@ -84,9 +84,11 @@ exports.deleteFile = async (req, res) => {
         if (!file) {
             return res.status(404).json({ error: 'File not found' });
         }
+
         if (req.user && req.user.id !== file.userId?.toString()) {
             return res.status(403).json({ error: 'Access denied' });
         }
+
         fs.unlinkSync(file.path);
         await File.deleteOne({ filename: req.params.filename });
 

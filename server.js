@@ -47,6 +47,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
+// Serve static files from the public and private directories
+app.use('/uploads/public', express.static(path.join(__dirname, 'uploads/public')));
+app.use('/uploads/private', express.static(path.join(__dirname, 'uploads/private')));
 
 
 // Configure Express
