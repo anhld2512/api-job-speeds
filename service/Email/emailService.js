@@ -48,7 +48,7 @@ const sendEmail = async (applicant, job) => {
 
   const applicantMailOptions = {
     from: process.env.EMAIL_USER,
-    to: email, // Send email to applicant
+    to: email, 
     subject: 'Application Received',
     html: applicantEmailTemplate,
     attachments: []
