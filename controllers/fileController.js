@@ -1,6 +1,7 @@
 const path = require('path');
 const fs = require('fs');
 const multer = require('multer');
+const mime = require('mime-types');
 const File = require('../models/File');
 
 // Define paths for public and private directories
@@ -19,14 +20,25 @@ if (!fs.existsSync(privateDir)) {
 // Configure multer storage
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        const isPublic = req.body.isPublic !== undefined ? req.body.isPublic : true;
+        const isPublic = req.body.isPublic === 'true';
         const uploadPath = isPublic ? publicDir : privateDir;
         cb(null, uploadPath);
     },
     filename: (req, file, cb) => {
+        let originalname = file.originalname.trim().replace(/\s+/g, '_');
+        const fileExtension = path.extname(originalname);
+        
+        // Nếu file không có phần mở rộng, xác định loại file và thêm phần mở rộng
+        if (!fileExtension) {
+            const mimeType = file.mimetype;
+            const extension = mime.extension(mimeType);
+            if (extension) {
+                originalname = `${originalname}.${extension}`;
+            }
+        }
+
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        const sanitizedFilename = file.originalname.trim().replace(/\s+/g, '_');
-        cb(null, uniqueSuffix + '-' + sanitizedFilename);
+        cb(null, uniqueSuffix + '-' + originalname);
     }
 });
 
@@ -41,7 +53,7 @@ exports.handleFileUpload = async (req, res) => {
         return res.status(400).json({ error: 'No file uploaded' });
     }
 
-    const isPublic = req.body.isPublic !== undefined ? req.body.isPublic : true;
+    const isPublic = req.body.isPublic === 'true';
     const userId = req.body.userId || null; // userId có thể là null
     const allowedUsers = req.body.allowedUsers || [];
     const newFile = new File({
