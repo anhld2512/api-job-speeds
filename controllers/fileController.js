@@ -20,7 +20,7 @@ if (!fs.existsSync(privateDir)) {
 // Configure multer storage
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        const isPublic = req.body.isPublic === 'true';
+        const isPublic = req.body.isPublic !== 'false'; // Mặc định là công khai
         const uploadPath = isPublic ? publicDir : privateDir;
         cb(null, uploadPath);
     },
@@ -67,7 +67,7 @@ exports.handleFileUpload = async (req, res) => {
         return res.status(400).json({ error: 'No file uploaded' });
     }
 
-    const isPublic = req.body.isPublic === 'true';
+    const isPublic = req.body.isPublic !== 'false'; // Mặc định là công khai
     const userId = req.body.userId || null; // userId có thể là null
     const allowedUsers = req.body.allowedUsers || [];
     const newFile = new File({

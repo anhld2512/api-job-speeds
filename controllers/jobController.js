@@ -125,10 +125,9 @@ exports.filterJobs = async (req, res) => {
             jobTyped: 1,
             jobName: 1,
             dateCreated: 1,
-            jobSkills:1,
+            jobSkills: 1,
             'contact.company': 1,
-            jobImageUrl:1,
-
+            jobImageUrl: 1,
         };
 
         const jobsPromise = Job.find(filter, projection)
@@ -138,51 +137,45 @@ exports.filterJobs = async (req, res) => {
 
         const countPromise = Job.countDocuments(filter);
 
-        // Aggregation pipeline to get distinct values
-        const distinctJobNamesPromise = Job.aggregate([
-            { $match: { jobStatus: 'active' } },
-            { $group: { _id: '$jobName' } },
-            { $sort: { _id: 1 } },
-            { $limit: 100 },
-            { $project: { _id: 0, jobName: '$_id' } }
-        ]).exec();
-
-        const distinctJobCategoriesPromise = Job.aggregate([
-            { $match: { jobStatus: 'active' } },
-            { $group: { _id: '$jobCategory' } },
-            { $sort: { _id: 1 } },
-            { $limit: 100 },
-            { $project: { _id: 0, jobCategory: '$_id' } }
-        ]).exec();
-
-        const distinctJobTypesPromise = Job.aggregate([
-            { $match: { jobStatus: 'active' } },
-            { $group: { _id: '$jobTyped' } },
-            { $sort: { _id: 1 } },
-            { $limit: 100 },
-            { $project: { _id: 0, jobTyped: '$_id' } }
-        ]).exec();
-
         // Wait for all promises to complete
-        const [jobs, count, distinctJobNames, distinctJobCategories, distinctJobTypes] = await Promise.all([
+        const [jobs, count] = await Promise.all([
             jobsPromise,
-            countPromise,
-            distinctJobNamesPromise,
-            distinctJobCategoriesPromise,
-            distinctJobTypesPromise
+            countPromise
         ]);
-
-        const FilterModel = {
-            JobNames: distinctJobNames.map(doc => doc.jobName),
-            JobCategories: distinctJobCategories.map(doc => doc.jobCategory),
-            JobTyped: distinctJobTypes.map(doc => doc.jobTyped)
-        };
 
         res.status(200).json({
             result: true,
             data: jobs,
-            count: count,
-            FilterModel: FilterModel
+            count: count
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+exports.getDistinctValues = async (req, res) => {
+    const { field } = req.query; // Lấy trường cần lấy giá trị phân biệt từ query params
+
+    if (!field) {
+        return res.status(400).json({ error: 'Field query parameter is required' });
+    }
+
+    const validFields = ['jobCategory', 'jobName', 'jobTyped'];
+    if (!validFields.includes(field)) {
+        return res.status(400).json({ error: 'Invalid field parameter' });
+    }
+
+    try {
+        const distinctValues = await Job.aggregate([
+            { $match: { jobStatus: 'active' } },
+            { $group: { _id: `$${field}` } },
+            { $sort: { _id: 1 } },
+            { $limit: 100 },
+            { $project: { _id: 0, value: '$_id' } }
+        ]).exec();
+
+        res.status(200).json({
+            result: true,
+            data: distinctValues.map(doc => doc.value)
         });
     } catch (error) {
         res.status(500).json({ error: error.message });
