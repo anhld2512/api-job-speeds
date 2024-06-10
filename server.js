@@ -1,8 +1,9 @@
 const express = require('express');
+const session = require('express-session');
 const dotenv = require('dotenv');
 const bodyParser = require('body-parser');
 const path = require('path');
-
+const MongoStore = require('connect-mongo');
 const connectDB = require('./config/db');
 const configureExpress = require('./config/expressConfig');
 const authRoutes = require('./routes/authRoutes');
@@ -56,20 +57,12 @@ app.use('/api/applications', applyRoutes);
 ;
 app.use(errorHandler);
 app.use(express.static(path.join(__dirname, 'public')));
-app.get('/test', function(req, res) {
-  const sampleData = {
-    fullName: "John Doe",
-    jobTitle: "Software Engineer",
-    coverLetter: "I am very interested in the Software Engineer position at your company. I have attached my CV for your review.",
-    urlCV: "https://example.com/johndoe-cv.pdf",
-    company: "JobSpeeds",
-    phone: "123-456-7890",
-    email: "john.doe@example.com",
-    address: "123 Main St, Anytown, USA"
-  };
-
-  res.render('test.ejs', sampleData);
-});
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'your-secret-key',
+  resave: false,
+  saveUninitialized: false,
+  store: MongoStore.create({ mongoUrl: process.env.MONGO_URI })
+}));
 
 const PORT = process.env.PORT || 2024;
 
