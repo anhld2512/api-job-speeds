@@ -84,11 +84,9 @@ exports.deleteFile = async (req, res) => {
         if (!file) {
             return res.status(404).json({ error: 'File not found' });
         }
-
         if (req.user && req.user.id !== file.userId?.toString()) {
             return res.status(403).json({ error: 'Access denied' });
         }
-
         fs.unlinkSync(file.path);
         await File.deleteOne({ filename: req.params.filename });
 
