@@ -2,6 +2,7 @@ const path = require('path');
 const fs = require('fs');
 const multer = require('multer');
 const mime = require('mime-types');
+const { v4: uuidv4 } = require('uuid');
 const File = require('../models/File');
 
 // Define paths for public and private directories
@@ -36,9 +37,9 @@ const storage = multer.diskStorage({
                 originalname = `${originalname}.${extension}`;
             }
         }
-
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, uniqueSuffix + '-' + originalname);
+        // Generate a unique filename using uuidv4
+        const uniqueFilename = `${uuidv4()}${fileExtension}`;
+        cb(null, uniqueFilename);
     }
 });
 
