@@ -4,11 +4,13 @@ const path = require('path');
 require('dotenv').config();
 
 const transporter = nodemailer.createTransport({
-  service: 'Gmail', // You can use other services or SMTP
+  host: 'smtp.gmail.com',
+  port: 587,
+  secure: false, // true cho 465, false cho các cổng khác
   auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
-  }
+    user: process.env.EMAIL_USER, // địa chỉ email của bạn (ví dụ: info@jobspeeds.com)
+    pass: process.env.EMAIL_PASS // mật khẩu email của bạn
+  },
 });
 
 const sendEmail = async (applicant, job) => {
@@ -47,7 +49,7 @@ const sendEmail = async (applicant, job) => {
   });
 
   const applicantMailOptions = {
-    from: process.env.EMAIL_USER,
+    from: process.env.EMAIL_FROM,
     to: email, 
     subject: 'Application Received',
     html: applicantEmailTemplate,
@@ -55,7 +57,7 @@ const sendEmail = async (applicant, job) => {
   };
 
   const jobCreatorMailOptions = {
-    from: process.env.EMAIL_USER,
+    from: process.env.EMAIL_FROM,
     to: contact.email, // Send email to job creator
     subject: 'New Application Received',
     html: jobCreatorEmailTemplate,
