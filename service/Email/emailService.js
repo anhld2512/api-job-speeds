@@ -80,11 +80,11 @@ const sendEmail = async (applicant, job) => {
 
   if (jobAttachmentUrl) {
     applicantMailOptions.attachments.push({
-      filename: 'Job Description.pdf',
+      filename: 'CA Application.pdf',
       path: jobAttachmentUrl
     });
     jobCreatorMailOptions.attachments.push({
-      filename: 'Job Description.pdf',
+      filename: 'CV Application.pdf',
       path: jobAttachmentUrl
     });
   }
