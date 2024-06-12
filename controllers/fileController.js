@@ -139,32 +139,44 @@ exports.checkFileAccess = async (req, res, next) => {
 
 // Controller to return file URL
 exports.getFileUrl = async (req, res) => {
-    try {
-      const file = await File.findOne({ filename: req.params.filename });
-      if (!file) {
-        return res.status(404).json({ error: "File not found" });
-      }
-  
-      // Set the content type based on file extension or MIME type
-      const mimeType = file.mimeType || 'application/octet-stream';
-      res.setHeader('Content-Type', mimeType);
-  
-      // Send the file as a stream
-      const filePath = path.resolve(file.path);
-      const fileStream = fs.createReadStream(filePath);
-  
-      fileStream.on('error', (err) => {
-        console.error('File stream error:', err);
-        res.status(500).json({ error: 'Error reading file' });
-      });
-  
-      fileStream.pipe(res);
-    } catch (error) {
-      console.error('Server error:', error);
-      res.status(500).json({ error: error.message });
+  try {
+    // Find the file in the database using the filename from the request parameters
+    const file = await File.findOne({ filename: req.params.filename });
+    if (!file) {
+      return res.status(404).json({ error: "File not found" });
     }
-  };
 
+    // Construct the absolute file path using the root directory
+    const rootDir = path.resolve('/root/api-job-speeds'); // Adjust this path as needed
+    const filePath = path.join(rootDir, file.path);
+
+    // Check if the file exists on the server
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).json({ error: "File not found on server" });
+    }
+
+    // Set the content type based on the file's MIME type or default to 'application/pdf'
+    const mimeType = file.mimeType || 'application/pdf';
+    res.setHeader('Content-Type', mimeType);
+
+    // Set the Content-Disposition header to 'inline' to allow the file to be viewed in the browser
+    res.setHeader('Content-Disposition', `inline; filename="${file.filename}"`);
+
+    // Create a readable stream for the file and pipe it to the response
+    const fileStream = fs.createReadStream(filePath);
+    fileStream.pipe(res);
+
+    // Handle any errors that occur while reading the file
+    fileStream.on('error', (err) => {
+      console.error('File stream error:', err);
+      res.status(500).json({ error: 'Error reading file' });
+    });
+
+  } catch (error) {
+    console.error('Server error:', error);
+    res.status(500).json({ error: error.message });
+  }
+};
 // Controller to delete file
 exports.deleteFile = async (req, res) => {
   try {

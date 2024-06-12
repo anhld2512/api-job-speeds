@@ -24,7 +24,7 @@ const configureExpress = (app) => {
   app.use(limiter);
   app.use(compression());
   app.use(cookieParser());
-  // app.use(corsConfig);
+  app.use(corsConfig);
 
   // Session configuration
   app.use(
