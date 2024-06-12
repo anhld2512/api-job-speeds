@@ -165,6 +165,11 @@ exports.getFileUrl = async (req, res) => {
     // Set the Content-Disposition header to 'inline' to allow the file to be viewed in the browser
     res.setHeader('Content-Disposition', `inline; filename="${file.filename}"`);
 
+    // Set caching headers to ensure the browser does not cache the file
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+
     // Create a readable stream for the file and pipe it to the response
     const fileStream = fs.createReadStream(filePath);
     fileStream.pipe(res);
