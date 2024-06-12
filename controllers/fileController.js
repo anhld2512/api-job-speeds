@@ -81,6 +81,7 @@ exports.handleFileUpload = async (req, res) => {
   const fileUrl = `${req.protocol}://${req.get("host")}/api/files/file/${
     req.file.filename
   }`;
+  delete req.file.path
   res.status(201).json({ result: true, file: req.file, fileUrl });
 };
 
@@ -157,8 +158,8 @@ exports.getFileUrl = async (req, res) => {
       return res.status(404).json({ error: "File not found on server" });
     }
 
-    // Set the content type based on the file's MIME type or default to 'application/pdf'
-    const mimeType = file.mimeType || 'application/pdf';
+    // Set the content type based on the file's MIME type or infer it from the file extension
+    const mimeType = file.mimeType || 'application/octet-stream';
     res.setHeader('Content-Type', mimeType);
 
     // Set the Content-Disposition header to 'inline' to allow the file to be viewed in the browser
@@ -168,7 +169,6 @@ exports.getFileUrl = async (req, res) => {
     const fileStream = fs.createReadStream(filePath);
     fileStream.pipe(res);
 
-    // Handle any errors that occur while reading the file
     fileStream.on('error', (err) => {
       console.error('File stream error:', err);
       res.status(500).json({ error: 'Error reading file' });
