@@ -139,7 +139,6 @@ exports.checkFileAccess = async (req, res, next) => {
 };
 
 // Controller to return file URL
-
 exports.getFileUrl = async (req, res) => {
   try {
     // Tìm file trong cơ sở dữ liệu bằng cách sử dụng filename từ tham số request
@@ -159,8 +158,8 @@ exports.getFileUrl = async (req, res) => {
       return res.status(404).json({ error: "File không được tìm thấy trên server" });
     }
 
-    // Đặt content type dựa trên MIME type của file hoặc suy ra từ phần mở rộng file
-    const mimeType = file.mimeType || 'application/octet-stream';
+    // Đặt content type dựa trên phần mở rộng của filename
+    const mimeType = mime.lookup(file.filename) || 'application/octet-stream';
     res.setHeader('Content-Type', mimeType);
 
     // Đặt header Content-Disposition là 'inline' để cho phép xem file trực tiếp trên trình duyệt
@@ -186,7 +185,6 @@ exports.getFileUrl = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-
 // Controller to delete file
 exports.deleteFile = async (req, res) => {
   try {
