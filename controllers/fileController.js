@@ -149,7 +149,7 @@ exports.getFileUrl = async (req, res) => {
     // Construct the absolute file path using the root directory
     const rootDir = path.resolve('/root/api-job-speeds'); // Adjust this path as needed
     const filePath = path.join(rootDir, file.path);
-    console.log(filePath)
+
     // Check if the file exists on the server
     if (!fs.existsSync(filePath)) {
       return res.status(404).json({ error: "File not found on server" });
