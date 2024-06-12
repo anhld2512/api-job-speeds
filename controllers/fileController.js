@@ -151,6 +151,7 @@ exports.getFileUrl = async (req, res) => {
     const filePath = file.path;
 
     // Debugging output to check file path
+    console.log('File path from database:', filePath);
 
     // Check if the file exists on the server
     if (!fs.existsSync(filePath)) {
