@@ -139,52 +139,54 @@ exports.checkFileAccess = async (req, res, next) => {
 };
 
 // Controller to return file URL
+
 exports.getFileUrl = async (req, res) => {
   try {
-    // Find the file in the database using the filename from the request parameters
+    // Tìm file trong cơ sở dữ liệu bằng cách sử dụng filename từ tham số request
     const file = await File.findOne({ filename: req.params.filename });
     if (!file) {
-      return res.status(404).json({ error: "File not found in database" });
+      return res.status(404).json({ error: "File không được tìm thấy trong cơ sở dữ liệu" });
     }
 
-    // Use the file path directly from the database as it is already an absolute path
+    // Sử dụng đường dẫn file trực tiếp từ cơ sở dữ liệu vì nó đã là đường dẫn tuyệt đối
     const filePath = file.path;
 
-    // Debugging output to check file path
-    console.log('File path from database:', filePath);
+    // Xuất thông tin debug để kiểm tra đường dẫn file
+    console.log('Đường dẫn file từ cơ sở dữ liệu:', filePath);
 
-    // Check if the file exists on the server
+    // Kiểm tra nếu file tồn tại trên server
     if (!fs.existsSync(filePath)) {
-      return res.status(404).json({ error: "File not found on server" });
+      return res.status(404).json({ error: "File không được tìm thấy trên server" });
     }
 
-    // Set the content type based on the file's MIME type or infer it from the file extension
+    // Đặt content type dựa trên MIME type của file hoặc suy ra từ phần mở rộng file
     const mimeType = file.mimeType || 'application/octet-stream';
     res.setHeader('Content-Type', mimeType);
 
-    // Set the Content-Disposition header to 'inline' to allow the file to be viewed in the browser
+    // Đặt header Content-Disposition là 'inline' để cho phép xem file trực tiếp trên trình duyệt
     res.setHeader('Content-Disposition', `inline; filename="${file.filename}"`);
 
-    // Set caching headers to ensure the browser does not cache the file
+    // Đặt các header caching để đảm bảo trình duyệt không cache file
     res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
     res.setHeader('Pragma', 'no-cache');
     res.setHeader('Expires', '0');
 
-    // Create a readable stream for the file and pipe it to the response
+    // Tạo một luồng đọc cho file và truyền nó đến response
     const fileStream = fs.createReadStream(filePath);
     fileStream.pipe(res);
 
-    // Handle any errors that occur while reading the file
+    // Xử lý bất kỳ lỗi nào xảy ra khi đọc file
     fileStream.on('error', (err) => {
-      console.error('File stream error:', err);
-      res.status(500).json({ error: 'Error reading file' });
+      console.error('Lỗi luồng file:', err);
+      res.status(500).json({ error: 'Lỗi khi đọc file' });
     });
 
   } catch (error) {
-    console.error('Server error:', error);
+    console.error('Lỗi server:', error);
     res.status(500).json({ error: error.message });
   }
 };
+
 // Controller to delete file
 exports.deleteFile = async (req, res) => {
   try {
