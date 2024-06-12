@@ -21,29 +21,27 @@ if (!fs.existsSync(privateDir)) {
 // Configure multer storage
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        const isPublic = req.body.isPublic !== 'false'; // Mặc định là công khai
+        const isPublic = req.body.isPublic !== 'false'; // Default is public
         const uploadPath = isPublic ? publicDir : privateDir;
         cb(null, uploadPath);
     },
     filename: (req, file, cb) => {
         let originalname = file.originalname.trim().replace(/\s+/g, '_');
         const fileExtension = path.extname(originalname);
-        
-        // Nếu file không có phần mở rộng, xác định loại file và thêm phần mở rộng
+        const defaultExtension = mime.extension(file.mimetype);
+        // If file doesn't have an extension, use default based on MIME type
         if (!fileExtension) {
-            const mimeType = file.mimetype;
-            const extension = mime.extension(mimeType);
-            if (extension) {
-                originalname = `${originalname}.${extension}`;
-            }
+          
+            originalname += `.${defaultExtension || 'bin'}`;
         }
+
         // Generate a unique filename using uuidv4
-        const uniqueFilename = `${uuidv4()}${fileExtension}`;
+        const uniqueFilename = `${uuidv4()}.${defaultExtension}`;
         cb(null, uniqueFilename);
     }
 });
 
-// Kiểm tra loại file
+// Check file type
 const fileFilter = (req, file, cb) => {
     const allowedMimeTypes = ['image/jpeg', 'image/png', 'application/pdf'];
     if (allowedMimeTypes.includes(file.mimetype)) {
@@ -55,7 +53,7 @@ const fileFilter = (req, file, cb) => {
 
 const upload = multer({ 
     storage,
-    limits: { fileSize: 10 * 1024 * 1024 }, // Giới hạn kích thước file 10MB
+    limits: { fileSize: 10 * 1024 * 1024 }, // 10MB file size limit
     fileFilter
 });
 
@@ -68,11 +66,11 @@ exports.handleFileUpload = async (req, res) => {
         return res.status(400).json({ error: 'No file uploaded' });
     }
 
-    const isPublic = req.body.isPublic !== 'false'; // Mặc định là công khai
-    const userId = req.body.userId || null; // userId có thể là null
+    const isPublic = req.body.isPublic !== 'false'; // Default is public
+    const userId = req.body.userId || null; // userId could be null
     const allowedUsers = req.body.allowedUsers || [];
     const newFile = new File({
-        filename: req.file.filename,
+        filename: req.file.filename, // Save full filename including extension
         userId: userId,
         isPublic: isPublic,
         allowedUsers: allowedUsers,
@@ -81,32 +79,73 @@ exports.handleFileUpload = async (req, res) => {
 
     await newFile.save();
 
-    const host = req.get('host');
-    const fileUrl = `${req.protocol}://${host}/uploads/${isPublic ? 'public' : 'private'}/${req.file.filename}`;
+    const fileUrl = `${req.protocol}://${req.get('host')}/api/files/file/${req.file.filename}`;
     res.status(201).json({ result: true, file: req.file, fileUrl });
 };
 
-// Controller to handle file retrieval
-exports.getFile = async (req, res) => {
+// Middleware to check file access
+const jwt = require('jsonwebtoken');
+
+exports.checkFileAccess = async (req, res, next) => {
+    try {
+        // Trích xuất token từ yêu cầu
+        const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
+        if (!token) {
+            return res.status(401).json({ error: 'Unauthorized: No token provided' });
+        }
+
+        // Xác thực token để lấy thông tin userId
+        const decoded = jwt.verify(token, 'yourjwtsecret-sone-team-project-job-tool');
+        const userId = decoded.id;
+        const filename = req.params.filename;
+        const file = await File.findOne({ filename: filename }); // Tìm tệp tin bằng tên file (bao gồm cả phần mở rộng)
+        if (!file) {
+            return res.status(404).json({ error: 'File not found' });
+        }
+
+        // Nếu là tệp tin công khai, không cần kiểm tra, trả kết quả luôn
+        if (file.isPublic) {
+            req.filePath = file.path; // Lưu đường dẫn của tệp tin trong yêu cầu
+            return next();
+        }
+
+        // Kiểm tra quyền truy cập
+        const isAllowed = userId && (userId === file.userId?.toString() || file.allowedUsers.includes(userId));
+        if (!isAllowed) {
+            return res.status(403).json({ error: 'Access denied' });
+        }
+
+        req.filePath = file.path; // Lưu đường dẫn của tệp tin trong yêu cầu
+        next();
+    } catch (error) {
+        if (error.name === 'JsonWebTokenError') {
+            return res.status(401).json({ error: 'Unauthorized: Invalid token' });
+        }
+        res.status(500).json({ error: error.message });
+    }
+};
+
+// Controller to return file URL
+exports.getFileUrl = async (req, res) => {
     try {
         const file = await File.findOne({ filename: req.params.filename });
         if (!file) {
             return res.status(404).json({ error: 'File not found' });
         }
 
-        const userId = req.user ? req.user.id : null;
-        const isAllowed = file.isPublic || (userId && (userId === file.userId?.toString() || file.allowedUsers.includes(userId)));
-        if (!isAllowed) {
-            return res.status(403).json({ error: 'Access denied' });
-        }
+        // Set the content type based on file extension or MIME type
+        res.set('Content-Type', file.mimeType);
 
-        res.sendFile(file.path, { root: '.' });
+        // Send the file as a stream
+        const fileStream = fs.createReadStream(file.path);
+        fileStream.pipe(res);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 };
 
-// Controller to handle file deletion
+
+// Controller to delete file
 exports.deleteFile = async (req, res) => {
     try {
         const file = await File.findOne({ filename: req.params.filename });
