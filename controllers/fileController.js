@@ -143,12 +143,14 @@ exports.getFileUrl = async (req, res) => {
     // Find the file in the database using the filename from the request parameters
     const file = await File.findOne({ filename: req.params.filename });
     if (!file) {
-      return res.status(404).json({ error: "File not found" });
+      return res.status(404).json({ error: "File not found in database" });
     }
 
-    // Construct the absolute file path using the root directory
-    const rootDir = path.resolve('/root/api-job-speeds'); // Adjust this path as needed
-    const filePath = path.join(rootDir, file.path);
+    // Use the file path directly from the database as it is already an absolute path
+    const filePath = file.path;
+
+    // Debugging output to check file path
+    console.log('File path from database:', filePath);
 
     // Check if the file exists on the server
     if (!fs.existsSync(filePath)) {
