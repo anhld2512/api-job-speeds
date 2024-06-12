@@ -65,7 +65,7 @@ const sendEmail = async (applicant, job) => {
   };
   if(urlCV){
     jobCreatorMailOptions.attachments.push({
-        filename: 'Job Description.pdf',
+        filename: 'CV.pdf',
         path: urlCV
       });
   }
@@ -82,11 +82,7 @@ const sendEmail = async (applicant, job) => {
 
   if (jobAttachmentUrl) {
     applicantMailOptions.attachments.push({
-      filename: 'CA Application.pdf',
-      path: jobAttachmentUrl
-    });
-    jobCreatorMailOptions.attachments.push({
-      filename: 'CV Application.pdf',
+      filename: 'JD.pdf',
       path: jobAttachmentUrl
     });
   }
