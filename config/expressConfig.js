@@ -19,8 +19,6 @@ const configureExpress = (app) => {
     max: 10000, // limit each IP to 100 requests per windowMs
     message: "Too many requests from this IP, please try again later",
   });
-
-  // Apply middleware
   app.use(limiter);
   app.use(compression());
   app.use(cookieParser());
