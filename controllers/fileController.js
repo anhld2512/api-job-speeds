@@ -139,22 +139,31 @@ exports.checkFileAccess = async (req, res, next) => {
 
 // Controller to return file URL
 exports.getFileUrl = async (req, res) => {
-  try {
-    const file = await File.findOne({ filename: req.params.filename });
-    if (!file) {
-      return res.status(404).json({ error: "File not found" });
+    try {
+      const file = await File.findOne({ filename: req.params.filename });
+      if (!file) {
+        return res.status(404).json({ error: "File not found" });
+      }
+  
+      // Set the content type based on file extension or MIME type
+      const mimeType = file.mimeType || 'application/octet-stream';
+      res.setHeader('Content-Type', mimeType);
+  
+      // Send the file as a stream
+      const filePath = path.resolve(file.path);
+      const fileStream = fs.createReadStream(filePath);
+  
+      fileStream.on('error', (err) => {
+        console.error('File stream error:', err);
+        res.status(500).json({ error: 'Error reading file' });
+      });
+  
+      fileStream.pipe(res);
+    } catch (error) {
+      console.error('Server error:', error);
+      res.status(500).json({ error: error.message });
     }
-
-    // Set the content type based on file extension or MIME type
-    res.set("Content-Type", file.mimeType);
-
-    // Send the file as a stream
-    const fileStream = fs.createReadStream(file.path);
-    fileStream.pipe(res);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
+  };
 
 // Controller to delete file
 exports.deleteFile = async (req, res) => {
