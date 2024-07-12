@@ -14,7 +14,6 @@ const shortUrl = require('../routes/shortUrl')
 // const postRoutes = require('./routes/postRoutes');
 // const albumRoutes = require('./routes/albumRoutes');
 // const publicShareCvRoutes = require('./routes/publicShareCvRoutes');
-
 const configureRoute = (app) =>{
     app.use('/api/auth', authRoutes);
     app.use('/api/users', userRoutes);
