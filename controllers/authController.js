@@ -39,7 +39,7 @@ exports.login = async (req, res) => {
     }
 
     const isPasswordValid = await user.comparePassword(password);
-    console.log('Password valid:', isPasswordValid);
+   
 
     if (!isPasswordValid) {
       return res.status(401).json({ error: 'Invalid username or password' });
@@ -47,7 +47,7 @@ exports.login = async (req, res) => {
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
     const refreshToken = jwt.sign({ id: user._id }, process.env.JWT_REFRESH_SECRET, { expiresIn: '30d' });
-
+    console.log('user:', user);
     res.json({ token, refreshToken, userId: user._id });
   } catch (error) {
     console.error('Login error:', error);

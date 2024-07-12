@@ -4,14 +4,11 @@ const Profile = require("../models/profileModel");
 // Create a new job
 exports.createJob = async (req, res) => {
     try {
-        const { userId } = req.body;
-
-        if (!userId) {
-            return res.status(400).json({ error: "Profile ID is required" });
-        }
-
+        const { userId } = '6690faecc5f8c34ca2d09909';
+        
+      
         // Fetch user profile asynchronously
-        const profileDetail = await Profile.findOne({userId:userId});
+        const profileDetail = await Profile.findOne({userId:'6690faecc5f8c34ca2d09909'});
 
         if (!profileDetail) {
             return res.status(404).json({ error: "User not found" });
@@ -24,13 +21,14 @@ exports.createJob = async (req, res) => {
             address: profileDetail.personalInfo.address,
             avatar: profileDetail.avatar
         };
-
+       
         const jobData = {
             ...req.body,
+            userId:'6690faecc5f8c34ca2d09909',
             contact: profile,
             jobStatus: 'active' // Set initial job status to active
         };
-       
+        console.log(jobData)
         // Create and save the job
         const job = new Job(jobData);
         await job.save();
