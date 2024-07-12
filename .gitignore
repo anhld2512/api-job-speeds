@@ -9,7 +9,7 @@ dist
 # Node dependencies
 node_modules/
 # Ignore uploads directories
-
+uploads/
 # Logs
 logs
 *.log
